@@ -28,7 +28,6 @@ regd_users.post("/register", (req, res) => {
   
 
 //only registered users can login
-const jwt = require("jsonwebtoken");
 const secretKey = "fingerprint_customer";
 
 regd_users.post("/login", (req, res) => {
@@ -53,6 +52,18 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
   
     books[isbn].reviews[username] = review;
     return res.status(200).json({ message: "Review added/updated successfully", reviews: books[isbn].reviews });
+  });
+  
+//delete
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+    const isbn = req.params.isbn;
+    const username = req.session.authorization.username;
+  
+    if (!books[isbn]) return res.status(404).json({ message: "Book not found" });
+    if (!books[isbn].reviews[username]) return res.status(404).json({ message: "No review by this user" });
+  
+    delete books[isbn].reviews[username];
+    return res.status(200).json({ message: "Review deleted successfully" });
   });
   
 
